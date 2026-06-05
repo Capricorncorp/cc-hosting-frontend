@@ -1,0 +1,28 @@
+{
+  "name": "cc-hosting-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Hosting acquisition surface (hosting.capricorncorp.com) — Architecture C Phase 4a",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@capricorncorp/frontend-platform": "^1.1.0",
+    "@marsidev/react-turnstile": "^1.4.2",
+    "axios": "^1.13.6",
+    "lucide-react": "^0.577.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.0"
+  }
+}
