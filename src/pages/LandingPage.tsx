@@ -33,25 +33,25 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: branding?.colors?.background || '#fafafa' }}>
+    <div style={{ minHeight: '100vh', background: '#fafafa' }}>
       {/* ── Header ───────────────────────────────────────────── */}
       <header style={{
         padding: '20px 40px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderBottom: `1px solid ${branding?.colors?.border || '#e0e0e0'}`,
+        borderBottom: `1px solid ${'#e0e0e0'}`,
         background: 'white',
       }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, fontSize: 20 }}>
-          <Server color={branding?.colors?.primary || '#1e3a8a'} />
+          <Server color={branding?.primary_color || '#1e3a8a'} />
           <span>{branding?.name || 'Capricorncorp'} Hosting</span>
         </Link>
         <nav style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
           <Link to="/pricing">Pricing</Link>
           <a href="https://console.capricorncorp.com" style={{ color: '#666' }}>Sign in</a>
           <Link to="/signup" style={{
-            background: branding?.colors?.primary || '#1e3a8a',
+            background: branding?.primary_color || '#1e3a8a',
             color: 'white',
             padding: '8px 16px',
             borderRadius: 6,
@@ -71,7 +71,7 @@ export default function LandingPage() {
         </p>
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
           <Link to="/pricing" style={{
-            background: branding?.colors?.primary || '#1e3a8a',
+            background: branding?.primary_color || '#1e3a8a',
             color: 'white',
             padding: '14px 28px',
             borderRadius: 8,
@@ -100,7 +100,7 @@ export default function LandingPage() {
               { icon: Headphones, title: 'Real human support', desc: 'India-based, 24/7, WhatsApp + email.' },
             ].map((f, i) => (
               <div key={i} style={{ padding: 24 }}>
-                <f.icon size={32} color={branding?.colors?.primary || '#1e3a8a'} />
+                <f.icon size={32} color={branding?.primary_color || '#1e3a8a'} />
                 <h3 style={{ fontSize: 20, margin: '16px 0 8px' }}>{f.title}</h3>
                 <p style={{ color: '#666' }}>{f.desc}</p>
               </div>
@@ -121,7 +121,7 @@ export default function LandingPage() {
               flex: '1 1 280px',
               maxWidth: 360,
               background: 'white',
-              border: `2px solid ${plan.popular ? branding?.colors?.primary || '#1e3a8a' : '#e0e0e0'}`,
+              border: `2px solid ${plan.popular ? branding?.primary_color || '#1e3a8a' : '#e0e0e0'}`,
               borderRadius: 12,
               padding: 32,
               position: 'relative',
@@ -131,7 +131,7 @@ export default function LandingPage() {
                   position: 'absolute',
                   top: -12,
                   right: 24,
-                  background: branding?.colors?.primary || '#1e3a8a',
+                  background: branding?.primary_color || '#1e3a8a',
                   color: 'white',
                   padding: '4px 12px',
                   borderRadius: 12,
@@ -155,9 +155,9 @@ export default function LandingPage() {
                 style={{
                   width: '100%',
                   padding: '12px',
-                  background: plan.popular ? branding?.colors?.primary || '#1e3a8a' : 'white',
-                  color: plan.popular ? 'white' : branding?.colors?.primary || '#1e3a8a',
-                  border: `2px solid ${branding?.colors?.primary || '#1e3a8a'}`,
+                  background: plan.popular ? branding?.primary_color || '#1e3a8a' : 'white',
+                  color: plan.popular ? 'white' : branding?.primary_color || '#1e3a8a',
+                  border: `2px solid ${branding?.primary_color || '#1e3a8a'}`,
                   borderRadius: 6,
                   fontWeight: 600,
                 }}
