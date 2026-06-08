@@ -215,6 +215,17 @@ export default function Onboarding({ onComplete }: { onComplete?: () => void } =
         // Wave 38: allowlist-validate the PhonePe payment URL — even though
         // Billing Service is trusted, if it's compromised we don't ship
         // customers off to an attacker's payment page.
+        // W125f hotfix: PhonePe V2 returns a rotating checkout host
+        // (mercury-t2.phonepe.com) not yet in the shared safeRedirect allowlist
+        // (platform 1.1.1 blocked on Verdaccio auth). PhonePe owns *.phonepe.com,
+        // so trust it here for the payment hop ONLY; all else still goes through
+        // safeRedirect.
+        let payHost = '';
+        try { payHost = new URL(data.paymentUrl).host.toLowerCase(); } catch { /* fall through */ }
+        if (payHost === 'phonepe.com' || payHost.endsWith('.phonepe.com')) {
+          window.location.href = data.paymentUrl;
+          return;
+        }
         const ok = safeRedirect(data.paymentUrl, {
           onUnsafe: (reason) => {
             setError(`We could not start your payment securely (${reason}). Please contact support.`);
