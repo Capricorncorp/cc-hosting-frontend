@@ -1,31 +1,109 @@
+/* Inter — matches capricorncorp.com. @import must precede all other rules. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+
+  /* Capricorncorp brand tokens (mirror capricorncorp.com) */
+  --cc-primary: #2563eb;
+  --cc-primary-hover: #1d4ed8;
+  --cc-accent: #06b6d4;
+  --cc-cyan: #22d3ee;
+  --cc-hero: #0A1628;
+  --cc-ink: #0f172a;
+  --cc-body: #475569;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { background: #ffffff; color: var(--cc-ink); min-height: 100vh; }
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ── Brand design language (ported from capricorncorp.com) ───────────── */
+
+/* Dark-navy hero with a subtle blueprint grid */
+.hero-grid {
+  background-color: var(--cc-hero);
+  background-image:
+    linear-gradient(rgba(96, 165, 250, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
 
-body {
-  background: #fafafa;
-  color: #1a1a1a;
-  min-height: 100vh;
+/* Blue → cyan gradient headline text */
+.gradient-text {
+  background: linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* Pill badge above the hero headline */
+.brand-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(37, 99, 235, 0.14);
+  border: 1px solid rgba(96, 165, 250, 0.30);
+  color: #93c5fd;
 }
 
-button {
-  font-family: inherit;
+/* Small uppercase section label */
+.brand-label {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cc-primary);
+}
+
+/* Hero CTAs */
+.btn-hero,
+.btn-hero-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease;
   cursor: pointer;
+  border: 2px solid transparent;
+}
+.btn-hero {
+  background: var(--cc-primary);
+  color: #fff;
+  box-shadow: 0 12px 24px -8px rgba(37, 99, 235, 0.6);
+}
+.btn-hero:hover { background: var(--cc-primary-hover); transform: translateY(-1px); }
+.btn-hero-outline { border-color: var(--cc-cyan); color: var(--cc-cyan); background: transparent; }
+.btn-hero-outline:hover { background: rgba(34, 211, 238, 0.10); }
+
+/* Feature / plan cards */
+.brand-card {
+  background: #fff;
+  border: 1px solid #e6e9f0;
+  border-radius: 16px;
+  padding: 26px;
+  transition: all 0.2s ease;
+}
+.brand-card:hover {
+  border-color: rgba(37, 99, 235, 0.40);
+  box-shadow: 0 14px 34px -14px rgba(15, 23, 42, 0.20);
+  transform: translateY(-2px);
 }
