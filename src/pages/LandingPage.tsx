@@ -14,6 +14,25 @@ interface Plan {
   cta?: string
 }
 
+// Registry returns `features` as an OBJECT and `monthly` price in PAISE. This page
+// assumed features:string[] (.slice/.map) and monthlyPrice — both wrong, crashing
+// the page to a blank screen once plans load. Normalize both.
+function featureList(features: any): string[] {
+  if (Array.isArray(features)) return features.map(String)
+  if (features && typeof features === 'object') {
+    return Object.entries(features)
+      .filter(([, v]) => v !== false && v !== null && v !== undefined && v !== '')
+      .map(([k, v]) => {
+        const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()).trim()
+        return v === true ? label : `${label}: ${v}`
+      })
+  }
+  return []
+}
+function rupees(paise: any): number {
+  return typeof paise === 'number' ? Math.round(paise / 100) : 0
+}
+
 export default function LandingPage() {
   const navigate = useNavigate()
   const { branding } = useTheme()
@@ -141,10 +160,10 @@ export default function LandingPage() {
               )}
               <h3 style={{ fontSize: 24, marginBottom: 8 }}>{plan.name}</h3>
               <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 24 }}>
-                ₹{plan.monthlyPrice}<span style={{ fontSize: 16, color: '#666', fontWeight: 400 }}>/mo</span>
+                ₹{rupees((plan as any).monthly)}<span style={{ fontSize: 16, color: '#666', fontWeight: 400 }}>/mo</span>
               </div>
               <ul style={{ listStyle: 'none', marginBottom: 24 }}>
-                {plan.features?.slice(0, 5).map((f, i) => (
+                {featureList(plan.features).slice(0, 5).map((f, i) => (
                   <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <Check size={16} color="#22c55e" /> <span>{f}</span>
                   </li>
