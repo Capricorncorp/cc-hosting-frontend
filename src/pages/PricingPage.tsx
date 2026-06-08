@@ -30,6 +30,12 @@ function featureList(features: any): string[] {
   return []
 }
 
+// Registry sends `monthly`/`annual` in PAISE (e.g. 14900 = ₹149). Older code read
+// non-existent `monthlyPrice`/`yearlyPrice` fields → ₹NaN. Convert paise → rupees.
+function rupees(paise: any): number {
+  return typeof paise === 'number' ? Math.round(paise / 100) : 0
+}
+
 export default function PricingPage() {
   const navigate = useNavigate()
   const { branding } = useTheme()
@@ -93,9 +99,9 @@ export default function PricingPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
         {plans.map(plan => {
-          const price = billingCycle === 'yearly' && plan.yearlyPrice
-            ? Math.round(plan.yearlyPrice / 12)
-            : plan.monthlyPrice
+          const monthlyRs = rupees((plan as any).monthly)
+          const annualRs = rupees((plan as any).annual)
+          const price = billingCycle === 'yearly' && annualRs ? Math.round(annualRs / 12) : monthlyRs
           return (
             <div key={plan.id} style={{
               background: 'white',
@@ -121,9 +127,9 @@ export default function PricingPage() {
               <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 4 }}>
                 ₹{price}<span style={{ fontSize: 16, color: '#666', fontWeight: 400 }}>/mo</span>
               </div>
-              {billingCycle === 'yearly' && plan.yearlyPrice && (
+              {billingCycle === 'yearly' && annualRs > 0 && (
                 <div style={{ fontSize: 12, color: '#666', marginBottom: 24 }}>
-                  Billed annually at ₹{plan.yearlyPrice}
+                  Billed annually at ₹{annualRs}
                 </div>
               )}
               <ul style={{ listStyle: 'none', marginBottom: 24 }}>
