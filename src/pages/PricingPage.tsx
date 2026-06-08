@@ -63,7 +63,7 @@ export default function PricingPage() {
       <header style={{ position: 'sticky', top: 0, zIndex: 30, background: 'rgba(10,22,40,0.72)', backdropFilter: 'blur(12px)', borderBottom: `1px solid ${b.border}` }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '15px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {b.logo ? <img src={b.logo} alt={b.name} style={{ height: 30 }} /> : <CapricornLogo iconSize={30} />}
+            {b.logo && b.logo !== '/logo.svg' ? <img src={b.logo} alt={b.name} style={{ height: 30 }} /> : <CapricornLogo iconSize={30} />}
             <span style={{ color: b.textDim, fontWeight: 600, fontSize: 14, borderLeft: `1px solid ${b.border}`, paddingLeft: 12 }}>Hosting</span>
           </Link>
           <nav style={{ display: 'flex', gap: 26, alignItems: 'center' }}>
