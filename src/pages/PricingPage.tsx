@@ -13,6 +13,23 @@ interface Plan {
   popular?: boolean
 }
 
+// The registry returns `features` as an OBJECT (e.g. {sites:1, ssdGb:10, antiSpam:true}),
+// but this page typed it as string[] and .map()'d it directly — crashing the whole
+// page (blank screen) once plans actually load. Normalize object|array → readable
+// string[] so the plan cards render for either shape.
+function featureList(features: any): string[] {
+  if (Array.isArray(features)) return features.map(String)
+  if (features && typeof features === 'object') {
+    return Object.entries(features)
+      .filter(([, v]) => v !== false && v !== null && v !== undefined && v !== '')
+      .map(([k, v]) => {
+        const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()).trim()
+        return v === true ? label : `${label}: ${v}`
+      })
+  }
+  return []
+}
+
 export default function PricingPage() {
   const navigate = useNavigate()
   const { branding } = useTheme()
@@ -110,7 +127,7 @@ export default function PricingPage() {
                 </div>
               )}
               <ul style={{ listStyle: 'none', marginBottom: 24 }}>
-                {plan.features?.map((f, i) => (
+                {featureList(plan.features).map((f, i) => (
                   <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
                     <Check size={16} color="#22c55e" style={{ marginTop: 4 }} />
                     <span>{f}</span>
