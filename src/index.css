@@ -1,52 +1,97 @@
 /* Inter — matches capricorncorp.com. @import must precede all other rules. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light;
+  color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 
-  /* Capricorncorp brand tokens (mirror capricorncorp.com) */
-  --cc-primary: #2563eb;
-  --cc-primary-hover: #1d4ed8;
-  --cc-accent: #06b6d4;
+  /* Capricorncorp dark brand tokens (match the Console onboarding) */
+  --cc-primary: #3b82f6;
+  --cc-primary-2: #2563eb;
+  --cc-purple: #8b5cf6;
   --cc-cyan: #22d3ee;
-  --cc-hero: #0A1628;
-  --cc-ink: #0f172a;
-  --cc-body: #475569;
+  --cc-card: #1a2744;
+  --cc-dark: #0a1628;
+  --cc-input: #0d1b33;
+  --cc-border: #2d3f5e;
+  --cc-text: #f1f5f9;
+  --cc-text-dim: #94a3b8;
+  --cc-green: #10b981;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body { background: #ffffff; color: var(--cc-ink); min-height: 100vh; }
+body {
+  background: var(--cc-dark);
+  color: var(--cc-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }
 
-/* ── Brand design language (ported from capricorncorp.com) ───────────── */
-
-/* Dark-navy hero with a subtle blueprint grid */
-.hero-grid {
-  background-color: var(--cc-hero);
-  background-image:
-    linear-gradient(rgba(96, 165, 250, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(96, 165, 250, 0.07) 1px, transparent 1px);
-  background-size: 56px 56px;
-}
-
-/* Blue → cyan gradient headline text */
+/* ── Animated gradient headline (blue → cyan → violet, slow pan) ─────── */
 .gradient-text {
-  background: linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%);
+  background: linear-gradient(100deg, #60a5fa, #22d3ee, #a78bfa, #60a5fa);
+  background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: cc-gradient-pan 9s ease-in-out infinite;
+}
+@keyframes cc-gradient-pan {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* Pill badge above the hero headline */
+/* ── Floating radial glow blobs behind the hero ─────────────────────── */
+.cc-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+  animation: cc-float 16s ease-in-out infinite;
+}
+@keyframes cc-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(24px, -34px) scale(1.12); }
+}
+
+/* ── Entrance: fade + rise (stagger via inline animation-delay) ──────── */
+.cc-rise {
+  opacity: 0;
+  transform: translateY(26px);
+  animation: cc-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes cc-rise { to { opacity: 1; transform: none; } }
+
+/* ── Glassy card with hover lift + glow ─────────────────────────────── */
+.cc-card {
+  background: linear-gradient(180deg, rgba(26, 39, 68, 0.85), rgba(18, 28, 51, 0.72));
+  border: 1px solid var(--cc-border);
+  border-radius: 18px;
+  padding: 28px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.cc-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 26px 60px -20px rgba(0, 0, 0, 0.6), 0 0 38px -10px rgba(59, 130, 246, 0.38);
+}
+
+/* ── Pill badge ─────────────────────────────────────────────────────── */
 .brand-pill {
   display: inline-flex;
   align-items: center;
@@ -55,55 +100,69 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
-  background: rgba(37, 99, 235, 0.14);
-  border: 1px solid rgba(96, 165, 250, 0.30);
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.32);
   color: #93c5fd;
+  backdrop-filter: blur(6px);
 }
 
-/* Small uppercase section label */
+/* ── Section label ──────────────────────────────────────────────────── */
 .brand-label {
   text-align: center;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--cc-primary);
+  color: #60a5fa;
 }
 
-/* Hero CTAs */
+/* ── Hero CTAs ──────────────────────────────────────────────────────── */
 .btn-hero,
 .btn-hero-outline {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 13px 26px;
-  border-radius: 10px;
+  padding: 14px 28px;
+  border-radius: 12px;
   font-weight: 600;
   font-size: 16px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border: 2px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  border: 1px solid transparent;
+  position: relative;
+  z-index: 1;
 }
 .btn-hero {
-  background: var(--cc-primary);
+  background: linear-gradient(180deg, #3b82f6, #2563eb);
   color: #fff;
-  box-shadow: 0 12px 24px -8px rgba(37, 99, 235, 0.6);
+  box-shadow: 0 14px 30px -10px rgba(37, 99, 235, 0.7);
 }
-.btn-hero:hover { background: var(--cc-primary-hover); transform: translateY(-1px); }
-.btn-hero-outline { border-color: var(--cc-cyan); color: var(--cc-cyan); background: transparent; }
-.btn-hero-outline:hover { background: rgba(34, 211, 238, 0.10); }
+.btn-hero:hover { transform: translateY(-2px); box-shadow: 0 18px 42px -10px rgba(37, 99, 235, 0.9); }
+.btn-hero-outline { border-color: rgba(148, 163, 184, 0.4); color: #e2e8f0; background: rgba(255, 255, 255, 0.03); }
+.btn-hero-outline:hover { border-color: var(--cc-cyan); color: var(--cc-cyan); transform: translateY(-2px); }
 
-/* Feature / plan cards */
-.brand-card {
-  background: #fff;
-  border: 1px solid #e6e9f0;
-  border-radius: 16px;
-  padding: 26px;
-  transition: all 0.2s ease;
+/* ── Plan card "shine" sweep on hover ───────────────────────────────── */
+.cc-card .cc-shine {
+  position: absolute; inset: 0; border-radius: 18px; pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.06) 50%, transparent 70%);
+  background-size: 250% 100%; background-position: 150% 0;
+  transition: background-position 0.7s ease;
 }
-.brand-card:hover {
-  border-color: rgba(37, 99, 235, 0.40);
-  box-shadow: 0 14px 34px -14px rgba(15, 23, 42, 0.20);
-  transform: translateY(-2px);
+.cc-card:hover .cc-shine { background-position: -50% 0; }
+
+/* ── Plan toggle ────────────────────────────────────────────────────── */
+.cc-toggle {
+  display: inline-flex; gap: 4px; padding: 4px; border-radius: 12px;
+  background: #111c33; border: 1px solid var(--cc-border);
+}
+.cc-toggle button {
+  padding: 9px 22px; border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+  background: transparent; color: var(--cc-text-dim); transition: all 0.2s ease;
+}
+.cc-toggle button.on { background: linear-gradient(180deg, #3b82f6, #2563eb); color: #fff; box-shadow: 0 6px 16px -6px rgba(37, 99, 235, 0.7); }
+
+/* ── Respect reduced-motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text, .cc-glow, .cc-rise, .cc-card, .btn-hero, .btn-hero-outline { animation: none !important; transition: none !important; }
+  .cc-rise { opacity: 1; transform: none; }
 }
