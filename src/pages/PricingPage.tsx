@@ -67,7 +67,7 @@ export default function PricingPage() {
             <span style={{ color: b.textDim, fontWeight: 600, fontSize: 14, borderLeft: `1px solid ${b.border}`, paddingLeft: 12 }}>Hosting</span>
           </Link>
           <nav style={{ display: 'flex', gap: 26, alignItems: 'center' }}>
-            <a href="https://console.capricorncorp.com" style={{ color: '#cbd5e1', fontWeight: 500, fontSize: 15 }}>Sign in</a>
+            <Link to="/signup" style={{ color: '#cbd5e1', fontWeight: 500, fontSize: 15 }}>Sign in</Link>
             <Link to="/signup" className="btn-hero" style={{ padding: '9px 18px', fontSize: 15, background: b.primary }}>Get started</Link>
           </nav>
         </div>
