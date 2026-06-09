@@ -96,6 +96,14 @@ const POLL_INTERVAL_MS = 3000;
 // before concluding the order was never paid (covers the webhook→job gap on a
 // fresh payment, ~18s) instead of spinning "Connecting…" forever.
 const NO_JOB_GRACE_POLLS = 6;
+// W131: payment-recipient identity on the checkout step (mirrors SMS Ocean's
+// CompanyInfoBadge). PRESENTATION ONLY — broker dynamic QR + reconciliation +
+// auto-provisioning unchanged. Legal name is a config constant (broker exposes no
+// merchant field via API). PAYMENT_MERCHANT_UPI stays empty until the settlement
+// VPA is confirmed against the broker; the UPI line renders only when set.
+const PAYMENT_MERCHANT_BRAND = 'Capricorncorp';
+const PAYMENT_MERCHANT_LEGAL_NAME = 'MOONSHOT AI PRIVATE LIMITED';
+const PAYMENT_MERCHANT_UPI = '';
 
 // Phase 4a §22.34 — onComplete is fallback for legacy callers. The new
 // hosting.capricorncorp.com surface doesn't pass it; instead the goTab
@@ -539,6 +547,16 @@ export default function Onboarding({ onComplete }: { onComplete?: () => void } =
               7-day free trial — no payment required today
             </div>
           )}
+          {/* W131: payment-recipient trust block — presentation only; dynamic QR + reconciliation unchanged */}
+          <div style={{ marginTop: 6, padding: '12px 14px', background: 'rgba(52,211,153,0.06)', border: `1px solid ${branding.border_color}`, borderRadius: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <ShieldCheck size={15} style={{ color: '#34d399' }} />
+              <span style={{ color: branding.text_primary, fontSize: 13, fontWeight: 700 }}>Secure payment</span>
+            </div>
+            <p style={{ color: branding.text_secondary, fontSize: 12.5, lineHeight: 1.55, margin: 0 }}>
+              You&rsquo;re paying <strong style={{ color: branding.text_primary }}>{PAYMENT_MERCHANT_LEGAL_NAME}</strong>{PAYMENT_MERCHANT_BRAND ? ` (${PAYMENT_MERCHANT_BRAND})` : ''} via UPI through the Capricorncorp Payments Broker.{PAYMENT_MERCHANT_UPI ? <> UPI ID <strong style={{ color: branding.text_primary }}>{PAYMENT_MERCHANT_UPI}</strong>.</> : null} You&rsquo;ll see and confirm the recipient in your UPI app before approving.
+            </p>
+          </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16, gap: 12, flexWrap: 'wrap' }}>
             <button onClick={() => setStep(2)} style={{ padding: '12px 24px', background: '#1e293b', color: branding.text_secondary, border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
               <ArrowLeft size={16} /> Back
