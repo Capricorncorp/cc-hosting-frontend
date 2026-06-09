@@ -87,10 +87,8 @@ export default function Callback() {
     // Read cart context BEFORE the token exchange so we can restore it on
     // either success or fallback paths.
     let selectedPlan: string | null = null
-    let onboardingTxn: string | null = null
     try {
       selectedPlan = sessionStorage.getItem('selected_plan')
-      onboardingTxn = sessionStorage.getItem('hosting_onboarding_txn')
     } catch { /* sessionStorage unavailable */ }
 
     ;(async () => {
@@ -122,12 +120,13 @@ export default function Callback() {
           try { localStorage.setItem('user_profile', JSON.stringify(data.user)) } catch {}
         }
 
-        // Build the /onboarding URL with the cart context restored. The
-        // Onboarding wizard re-reads sessionStorage on mount and supports a
-        // ?txn= query param to resume in-flight provisioning (Wave 52).
-        const search = new URLSearchParams()
-        if (onboardingTxn) search.set('txn', onboardingTxn)
-        const dest = search.toString() ? `/onboarding?${search.toString()}` : '/onboarding'
+        // W129: do NOT resurface a stale `hosting_onboarding_txn` here. In the
+        // normal flow the order/txn is created AFTER login (at checkout), so any
+        // txn lingering at sign-in is a leftover from a prior abandoned attempt;
+        // propagating it made a plain "Sign in" resume a dead, unpaid order and
+        // spin "Connecting to provisioning…" forever. A real payment return comes
+        // back via the gateway redirect (/onboarding?txn=...), not through here.
+        const dest = '/onboarding'
 
         // Make sure the wizard sees the plan the user picked before signup.
         if (selectedPlan) {
