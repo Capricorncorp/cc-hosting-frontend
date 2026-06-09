@@ -244,7 +244,12 @@ export default function Onboarding({ onComplete }: { onComplete?: () => void } =
         // safeRedirect.
         let payHost = '';
         try { payHost = new URL(data.paymentUrl).host.toLowerCase(); } catch { /* fall through */ }
-        if (payHost === 'phonepe.com' || payHost.endsWith('.phonepe.com')) {
+        // W130: the Capricorncorp Payments Broker returns its hosted payment page
+        // on a FIRST-PARTY host (app.capricorncorp.com). Trust *.capricorncorp.com
+        // for the payment hop too (same basis as PhonePe); every other host still
+        // routes through safeRedirect. (Fixes "host-not-allowlisted:app.capricorncorp.com".)
+        if (payHost === 'phonepe.com' || payHost.endsWith('.phonepe.com')
+            || payHost === 'capricorncorp.com' || payHost.endsWith('.capricorncorp.com')) {
           window.location.href = data.paymentUrl;
           return;
         }
