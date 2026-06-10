@@ -4,6 +4,7 @@ import { Server, Globe, Shield, Zap, Database, Headphones, Check, ArrowRight } f
 import client from '@capricorncorp/frontend-platform/api/client'
 import { useTheme } from '@capricorncorp/frontend-platform/theme/ThemeProvider'
 import CapricornLogo from '../components/CapricornLogo'
+import { HeaderNav } from '../auth/SurfaceAuth'
 
 interface Plan {
   id: string
@@ -69,11 +70,7 @@ export default function LandingPage() {
             {b.logo && b.logo !== '/logo.svg' ? <img src={b.logo} alt={b.name} style={{ height: 30 }} /> : <CapricornLogo iconSize={30} />}
             <span style={{ color: b.textDim, fontWeight: 600, fontSize: 14, borderLeft: `1px solid ${b.border}`, paddingLeft: 12 }}>Hosting</span>
           </Link>
-          <nav style={{ display: 'flex', gap: 26, alignItems: 'center' }}>
-            <Link to="/pricing" style={{ color: '#cbd5e1', fontWeight: 500, fontSize: 15 }}>Pricing</Link>
-            <Link to="/signup" style={{ color: '#cbd5e1', fontWeight: 500, fontSize: 15 }}>Sign in</Link>
-            <Link to="/signup" className="btn-hero" style={{ padding: '9px 18px', fontSize: 15, background: b.primary }}>Get started</Link>
-          </nav>
+          <HeaderNav primary={b.primary} pricing />
         </div>
       </header>
 

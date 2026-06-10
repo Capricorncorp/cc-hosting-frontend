@@ -57,6 +57,49 @@ export default function Callback() {
     const oidcErrorDesc = params.get('error_description')
     const returnedState = params.get('state')
 
+    // ── Silent session-detection callback (SurfaceAuth prompt=none) ──────────
+    // Distinguished from a real signup by the dedicated `cc_silent_state` marker.
+    // This NEVER routes to /onboarding — it only records who the customer is (so the
+    // marketing header can greet them) and returns them to where they were. A real
+    // signup has no `cc_silent_state`, so it falls straight through to the unchanged
+    // flow below.
+    let silentState: string | null = null
+    try { silentState = sessionStorage.getItem('cc_silent_state') } catch { /* ignore */ }
+    if (silentState && returnedState && returnedState === silentState) {
+      let ret = '/'
+      try {
+        sessionStorage.removeItem('cc_silent_state')
+        sessionStorage.setItem('cc_silent_tried', '1')
+        ret = sessionStorage.getItem('cc_silent_return') || '/'
+        sessionStorage.removeItem('cc_silent_return')
+      } catch { /* ignore */ }
+      if (code) {
+        // A shared OIDC session exists — exchange server-side for the profile + tokens,
+        // then bounce back (same gateway path the signup flow uses).
+        ;(async () => {
+          try {
+            const res = await fetch(`${GATEWAY_URL}/auth/oidc-token`, {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code, redirect_uri: REDIRECT_URI }),
+            })
+            if (res.ok) {
+              const data = await res.json()
+              if (data?.access_token) setAccessToken(data.access_token, data.expires_in || 900)
+              if (data?.user) { try { localStorage.setItem('user_profile', JSON.stringify(data.user)) } catch { /* ignore */ } }
+              try { sessionStorage.removeItem('logged_out') } catch { /* ignore */ }
+            }
+          } catch { /* recognition is best-effort — fall through to logged-out */ }
+          window.location.replace(ret)
+        })()
+      } else {
+        // prompt=none returned login_required / no session — just go back, logged out.
+        window.location.replace(ret)
+      }
+      return
+    }
+
     if (oidcError) {
       setError(`Sign-in failed: ${oidcErrorDesc || oidcError}`)
       try { sessionStorage.setItem('hosting_oidc_error', oidcErrorDesc || oidcError) } catch {}
