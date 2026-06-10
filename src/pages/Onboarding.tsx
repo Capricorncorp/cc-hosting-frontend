@@ -236,6 +236,10 @@ export default function Onboarding({ onComplete }: { onComplete?: () => void } =
       });
       if (data.trial || data.devMode) {
         setMerchantTransId(data.merchantTransId);
+        // Persist so a REFRESH on the Setup step resumes here. Trial/dev orders have
+        // no payment redirect, so this sessionStorage write is the only thing that
+        // survives a reload — without it a refresh dropped the customer back to step 1.
+        try { sessionStorage.setItem('hosting_onboarding_txn', data.merchantTransId); } catch {}
         setStep(4); // Provisioning step — real polling starts via useEffect
       } else if (data.paymentUrl) {
         // Persist the txnId so the post-PhonePe redirect can resume
@@ -292,20 +296,34 @@ export default function Onboarding({ onComplete }: { onComplete?: () => void } =
         ssTxn = sessionStorage.getItem('hosting_onboarding_txn');
       } catch { /* sessionStorage unavailable */ }
 
+      // Explicit ?txn= = the real payment-gateway redirect. Resume step 4 immediately
+      // (the job may not exist for a few seconds after a fresh payment — the poll's
+      // grace guard covers that gap). PERSIST it so a later refresh — by which point
+      // the URL param may be gone — still resumes instead of dropping to step 1.
       if (urlTxn) {
+        try { sessionStorage.setItem('hosting_onboarding_txn', urlTxn); } catch { /* noop */ }
         if (!cancelled) { setMerchantTransId(urlTxn); setStep(4); setResumeChecked(true); }
         return;
       }
       if (!ssTxn) { if (!cancelled) setResumeChecked(true); return; }
 
-      // Stale candidate — confirm a real provisioning job exists before resuming.
+      // sessionStorage-only txn — a legit in-progress order (the refresh case) OR a
+      // stale leftover from an abandoned attempt. Confirm a real job exists before
+      // resuming. CRITICAL: only a DEFINITIVE "no job" (job-less 200, or 404) clears
+      // it; a transient/network error must NOT discard the txn — doing so stranded a
+      // legitimate order back at step 1 on every refresh (the reported bug). On a
+      // transient error we resume step 4 and let the poll render the real state.
       try {
         const { data } = await client.get(`/onboarding/${ssTxn}/status`);
         if (cancelled) return;
         if (data?.job) { setMerchantTransId(ssTxn); setStep(4); }
         else { try { sessionStorage.removeItem('hosting_onboarding_txn'); } catch { /* noop */ } }
-      } catch {
-        try { sessionStorage.removeItem('hosting_onboarding_txn'); } catch { /* noop */ }
+      } catch (e: any) {
+        if (e?.response?.status === 404) {
+          try { sessionStorage.removeItem('hosting_onboarding_txn'); } catch { /* noop */ }
+        } else if (!cancelled) {
+          setMerchantTransId(ssTxn); setStep(4);
+        }
       } finally {
         if (!cancelled) setResumeChecked(true);
       }
