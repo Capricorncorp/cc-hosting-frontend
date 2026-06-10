@@ -25,7 +25,8 @@ const GATEWAY_URL = (import.meta as any).env?.VITE_GATEWAY_URL || 'https://gatew
 const CLIENT_ID = 'hosting-frontend'
 // Where a signed-in customer goes to manage their service (Architecture C: Console is
 // the operational plane; product surfaces are acquisition-only).
-const CONSOLE_URL = 'https://console.capricorncorp.com/#hosting'
+// ?from=hosting lets Console render a contextual "Back to Hosting" link.
+const CONSOLE_URL = 'https://console.capricorncorp.com/?from=hosting#hosting'
 
 export interface SurfaceUser { firstName?: string; lastName?: string; email?: string; id?: number | string }
 
