@@ -824,6 +824,15 @@ function PostProvisioningSuccess({
   const goMail = () => goTab('#mail', '?tab=accounts&new=1');
   const goDomainHealth = () => goTab('#hosting', '?tab=health');
   const goCwp = () => goTab('#hosting', '?tab=cwp');
+  // The primary CTA. On the legacy in-Console caller, onComplete navigates the
+  // wizard home. On the hosting.capricorncorp.com surface onComplete is undefined
+  // — previously that made the button a NO-OP (the "Go to Hosting Dashboard is a
+  // sham" report). Fall back to an absolute redirect to the customer's hosting
+  // management dashboard in Console (?welcome=1 shows Console's first-touch panel).
+  const goDashboard = () => {
+    if (onComplete) { onComplete(); return; }
+    goTab('#hosting', '?welcome=1');
+  };
 
   // Per-step status the panel may want to reference.
   const sslStep = status.steps.find(s => s.name === 'install_ssl');
@@ -932,7 +941,7 @@ function PostProvisioningSuccess({
         >
           <BookOpen size={12} /> Getting-started guide
         </a>
-        <button onClick={onComplete} style={{
+        <button onClick={goDashboard} style={{
           padding: '12px 24px', background: branding.primary_color, color: '#fff',
           border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer',
           display: 'inline-flex', alignItems: 'center', gap: 6,
