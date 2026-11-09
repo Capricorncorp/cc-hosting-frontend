@@ -1,3 +1,4 @@
+import { CONSOLE_ORIGIN, SESSION_COOKIE_DOMAIN } from '../surfaceConfig'
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { getAccessToken, clearTokens } from '@capricorncorp/frontend-platform/api/auth'
@@ -26,7 +27,7 @@ const CLIENT_ID = 'hosting-frontend'
 // Where a signed-in customer goes to manage their service (Architecture C: Console is
 // the operational plane; product surfaces are acquisition-only).
 // ?from=hosting lets Console render a contextual "Back to Hosting" link.
-const CONSOLE_URL = 'https://console.capricorncorp.com/?from=hosting#hosting'
+const CONSOLE_URL = `${CONSOLE_ORIGIN}/?from=hosting#hosting`
 
 export interface SurfaceUser { firstName?: string; lastName?: string; email?: string; id?: number | string }
 
@@ -84,7 +85,7 @@ export function SurfaceAuthProvider({ children }: { children: React.ReactNode })
       sessionStorage.removeItem('cc_silent_tried')
       sessionStorage.removeItem('cc_silent_state')
     } catch { /* ignore */ }
-    document.cookie = 'cc_session=; domain=.capricorncorp.com; path=/; secure; max-age=0; samesite=lax'
+    document.cookie = `cc_session=; domain=${SESSION_COOKIE_DOMAIN}; path=/; secure; max-age=0; samesite=lax`
     // Best-effort clear of the HttpOnly refresh cookie, then destroy the OIDC session
     // globally so every other surface also drops to logged-out.
     const finish = () => {

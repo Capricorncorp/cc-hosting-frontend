@@ -1,3 +1,4 @@
+import { MOONSHOT_PROFILE, OIDC_ORIGIN } from '../surfaceConfig'
 import { useEffect } from 'react'
 
 // Wave 96 P0 fix — redirect_uri now points at /callback (not /onboarding).
@@ -10,6 +11,8 @@ import { useEffect } from 'react'
 // invalid_redirect_uri because /onboarding was never registered. See
 // docs/qc-bundle-2026-06-05/walkthrough/CUSTOMER-ONBOARDING-WALKTHROUGH.md
 // step 6 for the QC trace.
+
+const SIGN_IN_ORIGIN = MOONSHOT_PROFILE ? OIDC_ORIGIN : 'https://auth.capricorncorp.com'
 
 export default function SignupRedirect() {
   useEffect(() => {
@@ -27,7 +30,7 @@ export default function SignupRedirect() {
     const state = encodeURIComponent(rawState)
     try { sessionStorage.setItem('oauth_state', rawState) } catch {}
     window.location.href =
-      `https://auth.capricorncorp.com/auth?response_type=code&` +
+      `${SIGN_IN_ORIGIN}/auth?response_type=code&` +
       `client_id=${clientId}&redirect_uri=${redirectUri}&` +
       `state=${state}&scope=openid+profile+email`
   }, [])
@@ -35,7 +38,7 @@ export default function SignupRedirect() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center' }}>
         <p>Redirecting to sign in...</p>
-        <p style={{ color: '#666', marginTop: 8 }}>If you're not redirected, <a href="https://auth.capricorncorp.com/auth">click here</a>.</p>
+        <p style={{ color: '#666', marginTop: 8 }}>If you're not redirected, <a href={`${SIGN_IN_ORIGIN}/auth`}>click here</a>.</p>
       </div>
     </div>
   )

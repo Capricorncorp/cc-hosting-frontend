@@ -1,3 +1,4 @@
+import { MOONSHOT_PROFILE, STOREFRONT_ORIGIN, surfaceBrand } from '../surfaceConfig'
 // Wave 96 P0 fix — OIDC callback handler for hosting.capricorncorp.com
 //
 // Prior to this page, SignupRedirect sent redirect_uri=/onboarding to OIDC.
@@ -37,7 +38,7 @@ const GATEWAY_URL =
 const REDIRECT_URI =
   typeof window !== 'undefined'
     ? `${window.location.origin}/callback`
-    : 'https://hosting.capricorncorp.com/callback'
+    : `${STOREFRONT_ORIGIN}/callback`
 
 export default function Callback() {
   const navigate = useNavigate()
@@ -200,7 +201,7 @@ export default function Callback() {
     }}>
       <div style={{ textAlign: 'center', maxWidth: 360 }}>
         <div style={{ fontSize: 12, letterSpacing: 4, color: '#64748b', marginBottom: 16 }}>
-          CAPRICORNCORP
+          {MOONSHOT_PROFILE ? surfaceBrand(branding?.name).name.toUpperCase() : 'CAPRICORNCORP'}
         </div>
         {error ? (
           <>
