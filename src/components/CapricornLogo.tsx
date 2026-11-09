@@ -1,3 +1,4 @@
+import { MOONSHOT_PROFILE } from '../surfaceConfig'
 /**
  * CapricornLogo — the approved Capricorncorp brand mark (exact Figma paths,
  * identical to capricorncorp.com). Icon: hex-based CC monogram, #4A6DFF (blue)
@@ -15,6 +16,13 @@ export default function CapricornLogo({
   textColor = '#ffffff',
   iconOnly = false,
 }: CapricornLogoProps) {
+  if (MOONSHOT_PROFILE) {
+    return <img
+      src={iconOnly ? '/brand/moonshot-symbol.svg' : '/brand/moonshot-reversed.svg'}
+      alt="Moonshot AI"
+      style={{ display: 'block', height: iconSize, width: 'auto' }}
+    />
+  }
   const iconH = iconSize
   const iconW = iconSize * (22 / 25)
   return (

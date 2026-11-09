@@ -6,8 +6,10 @@ RUN npm_config_fetch_retries=5 npm_config_fetch_retry_mintimeout=20000 npm_confi
 
 COPY . .
 
+ARG VITE_ACQUISITION_PROFILE=legacy
 ARG VITE_GATEWAY_URL=https://gateway.capricorncorp.com
 ARG VITE_OIDC_URL=https://auth.capricorncorp.com
+ENV VITE_ACQUISITION_PROFILE=$VITE_ACQUISITION_PROFILE
 ENV VITE_GATEWAY_URL=$VITE_GATEWAY_URL
 ENV VITE_OIDC_URL=$VITE_OIDC_URL
 

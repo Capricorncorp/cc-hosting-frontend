@@ -1,3 +1,4 @@
+import { surfaceBrand } from '../surfaceConfig'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Check, ArrowLeft } from 'lucide-react'
@@ -39,8 +40,7 @@ export default function PricingPage() {
     dark: branding?.surface_dark || '#0a1628',
     border: branding?.border_color || '#2d3f5e',
     textDim: branding?.text_secondary || '#94a3b8',
-    name: branding?.name || 'Capricorncorp',
-    logo: (branding as any)?.logo_url as string | undefined,
+    ...surfaceBrand(branding?.name, (branding as any)?.logo_url),
   }
   const [plans, setPlans] = useState<Plan[]>([])
   const [loading, setLoading] = useState(true)

@@ -1,3 +1,4 @@
+import { CONSOLE_ORIGIN, MOONSHOT_PROFILE } from '../surfaceConfig'
 // Hosting Onboarding Wizard
 //
 // REWRITTEN 2026-05-28: real backend state polling, no setTimeout fakes.
@@ -255,12 +256,18 @@ export default function Onboarding({ onComplete }: { onComplete?: () => void } =
         // so trust it here for the payment hop ONLY; all else still goes through
         // safeRedirect.
         let payHost = '';
-        try { payHost = new URL(data.paymentUrl).host.toLowerCase(); } catch { /* fall through */ }
+        let moonshotCheckout = false;
+        try {
+          const paymentUrl = new URL(data.paymentUrl);
+          payHost = paymentUrl.host.toLowerCase();
+          moonshotCheckout = MOONSHOT_PROFILE && paymentUrl.origin === 'https://payments.moonshot-ai.in'
+            && !paymentUrl.username && !paymentUrl.password;
+        } catch { /* fall through */ }
         // W130: the Capricorncorp Payments Broker returns its hosted payment page
         // on a FIRST-PARTY host (app.capricorncorp.com). Trust *.capricorncorp.com
         // for the payment hop too (same basis as PhonePe); every other host still
         // routes through safeRedirect. (Fixes "host-not-allowlisted:app.capricorncorp.com".)
-        if (payHost === 'phonepe.com' || payHost.endsWith('.phonepe.com')
+        if (moonshotCheckout || payHost === 'phonepe.com' || payHost.endsWith('.phonepe.com')
             || payHost === 'capricorncorp.com' || payHost.endsWith('.capricorncorp.com')) {
           window.location.href = data.paymentUrl;
           return;
@@ -814,7 +821,7 @@ function PostProvisioningSuccess({
   // The hash/query indicates which sub-tab/dialog should open. Wave 53's
   // PostProvisioning success panel on Console handles these hashes.
   const goTab = (hash: string, search: string) => {
-    const consoleUrl = new URL('https://console.capricorncorp.com/');
+    const consoleUrl = new URL('/', CONSOLE_ORIGIN);
     consoleUrl.search = search;
     consoleUrl.hash = hash;
     window.location.href = consoleUrl.toString();
@@ -935,11 +942,11 @@ function PostProvisioningSuccess({
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginTop: 20 }}>
         <a
-          href="https://capricorncorp.com/docs/getting-started"
+          href={MOONSHOT_PROFILE ? 'https://moonshot-ai.in/contact' : 'https://capricorncorp.com/docs/getting-started'}
           target="_blank" rel="noreferrer"
           style={{ color: branding.text_muted, fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
         >
-          <BookOpen size={12} /> Getting-started guide
+          <BookOpen size={12} /> {MOONSHOT_PROFILE ? 'Contact support' : 'Getting-started guide'}
         </a>
         <button onClick={goDashboard} style={{
           padding: '12px 24px', background: branding.primary_color, color: '#fff',

@@ -1,3 +1,4 @@
+import { COMPANY_ORIGIN, CONSOLE_ORIGIN, MOONSHOT_PROFILE, surfaceBrand } from '../surfaceConfig'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Server, Globe, Shield, Zap, Database, Headphones, Check, ArrowRight } from 'lucide-react'
@@ -40,8 +41,7 @@ export default function LandingPage() {
     dark: branding?.surface_dark || '#0a1628',
     border: branding?.border_color || '#2d3f5e',
     textDim: branding?.text_secondary || '#94a3b8',
-    name: branding?.name || 'Capricorncorp',
-    logo: (branding as any)?.logo_url as string | undefined,
+    ...surfaceBrand(branding?.name, (branding as any)?.logo_url),
   }
   const [plans, setPlans] = useState<Plan[]>([])
   const [loading, setLoading] = useState(true)
@@ -102,7 +102,7 @@ export default function LandingPage() {
 
       {/* ── Features ─────────────────────────────────────────── */}
       <section id="features" style={{ padding: '72px 24px', maxWidth: 1140, margin: '0 auto' }}>
-        <p className="brand-label cc-rise">Why Capricorncorp</p>
+        <p className="brand-label cc-rise">Why {MOONSHOT_PROFILE ? b.name : 'Capricorncorp'}</p>
         <h2 className="cc-rise" style={{ fontSize: 'clamp(28px,4vw,38px)', textAlign: 'center', fontWeight: 800, margin: '8px 0 48px', letterSpacing: '-0.01em', animationDelay: '0.05s' }}>Everything you need</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 22 }}>
           {features.map((f, i) => (
@@ -173,8 +173,8 @@ export default function LandingPage() {
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}><CapricornLogo iconSize={28} /></div>
           <p style={{ fontSize: 14 }}>
             © {new Date().getFullYear()} {b.name} ·{' '}
-            <a href="https://console.capricorncorp.com" style={{ color: '#cbd5e1' }}>Console</a> ·{' '}
-            <a href="https://capricorncorp.com" style={{ color: '#cbd5e1' }}>Main site</a>
+            <a href={CONSOLE_ORIGIN} style={{ color: '#cbd5e1' }}>Console</a> ·{' '}
+            <a href={COMPANY_ORIGIN} style={{ color: '#cbd5e1' }}>Main site</a>
           </p>
         </div>
       </footer>
