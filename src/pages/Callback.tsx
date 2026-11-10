@@ -40,6 +40,21 @@ const REDIRECT_URI =
     ? `${window.location.origin}/callback`
     : `${STOREFRONT_ORIGIN}/callback`
 
+const LEGACY_SESSION_KEYS = [
+  '_at', '_at_exp', 'oauth_state', 'selected_plan', 'billing_cycle',
+  'hosting_onboarding_txn', 'hosting_oidc_error', 'logged_out',
+]
+
+function anonymousLandingDestination(savedReturn: string | null, params: URLSearchParams) {
+  if (MOONSHOT_PROFILE || window.location.origin !== 'https://hosting.capricorncorp.com' || window.location.hash) return
+  if (savedReturn !== '/' && savedReturn !== '/pricing') return
+  if (params.has('code') || params.get('error') !== 'login_required' ||
+      params.getAll('error').length !== 1 || params.getAll('state').length !== 1) return
+  if (localStorage.getItem('user_profile') !== null ||
+      LEGACY_SESSION_KEYS.some(key => sessionStorage.getItem(key) !== null)) return
+  return `https://hosting.moonshot-ai.in${savedReturn}`
+}
+
 export default function Callback() {
   const navigate = useNavigate()
   const { branding } = useTheme()
@@ -68,11 +83,14 @@ export default function Callback() {
     try { silentState = sessionStorage.getItem('cc_silent_state') } catch { /* ignore */ }
     if (silentState && returnedState && returnedState === silentState) {
       let ret = '/'
+      let anonymousDestination: string | undefined
       try {
         sessionStorage.removeItem('cc_silent_state')
         sessionStorage.setItem('cc_silent_tried', '1')
-        ret = sessionStorage.getItem('cc_silent_return') || '/'
+        const savedReturn = sessionStorage.getItem('cc_silent_return')
+        ret = savedReturn || '/'
         sessionStorage.removeItem('cc_silent_return')
+        anonymousDestination = anonymousLandingDestination(savedReturn, params)
       } catch { /* ignore */ }
       if (code) {
         // A shared OIDC session exists — exchange server-side for the profile + tokens,
@@ -95,8 +113,7 @@ export default function Callback() {
           window.location.replace(ret)
         })()
       } else {
-        // prompt=none returned login_required / no session — just go back, logged out.
-        window.location.replace(ret)
+        window.location.replace(anonymousDestination || ret)
       }
       return
     }
