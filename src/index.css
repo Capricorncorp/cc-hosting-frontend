@@ -166,3 +166,16 @@ button { font-family: inherit; cursor: pointer; }
   .gradient-text, .cc-glow, .cc-rise, .cc-card, .btn-hero, .btn-hero-outline { animation: none !important; transition: none !important; }
   .cc-rise { opacity: 1; transform: none; }
 }
+
+@media (max-width: 480px) {
+  .storefront-header-row {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+
+  .storefront-header-row > nav {
+    overflow-wrap: anywhere;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+}
