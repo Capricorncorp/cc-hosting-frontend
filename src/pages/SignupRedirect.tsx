@@ -1,5 +1,6 @@
 import { MOONSHOT_PROFILE, OIDC_ORIGIN } from '../surfaceConfig'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import { beginLegacySignupSessionDetection } from '../auth/SurfaceAuth'
 
 // Wave 96 P0 fix — redirect_uri now points at /callback (not /onboarding).
 // /callback handles the OIDC token exchange via the Gateway, restores the
@@ -15,7 +16,12 @@ import { useEffect } from 'react'
 const SIGN_IN_ORIGIN = MOONSHOT_PROFILE ? OIDC_ORIGIN : 'https://auth.capricorncorp.com'
 
 export default function SignupRedirect() {
+  const redirected = useRef(false)
   useEffect(() => {
+    if (redirected.current) return
+    redirected.current = true
+    if (beginLegacySignupSessionDetection()) return
+
     const clientId = 'hosting-frontend'
     // redirect_uri MUST match what the OIDC client is registered with AND
     // what Callback.tsx will send to the gateway on the second leg of the
