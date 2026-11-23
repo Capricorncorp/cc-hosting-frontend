@@ -942,11 +942,11 @@ function PostProvisioningSuccess({
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginTop: 20 }}>
         <a
-          href={MOONSHOT_PROFILE ? 'https://moonshot-ai.in/contact' : 'https://capricorncorp.com/docs/getting-started'}
+          href="https://moonshot-ai.in/contact-us"
           target="_blank" rel="noreferrer"
           style={{ color: branding.text_muted, fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
         >
-          <BookOpen size={12} /> {MOONSHOT_PROFILE ? 'Contact support' : 'Getting-started guide'}
+          <BookOpen size={12} /> Contact support
         </a>
         <button onClick={goDashboard} style={{
           padding: '12px 24px', background: branding.primary_color, color: '#fff',
