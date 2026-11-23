@@ -47,7 +47,7 @@ const LEGACY_SESSION_KEYS = [
 
 function anonymousLandingDestination(savedReturn: string | null, params: URLSearchParams) {
   if (MOONSHOT_PROFILE || window.location.origin !== 'https://hosting.capricorncorp.com' || window.location.hash) return
-  if (savedReturn !== '/' && savedReturn !== '/pricing') return
+  if (savedReturn !== '/' && savedReturn !== '/pricing' && savedReturn !== '/signup') return
   if (params.has('code') || params.get('error') !== 'login_required' ||
       params.getAll('error').length !== 1 || params.getAll('state').length !== 1) return
   if (localStorage.getItem('user_profile') !== null ||

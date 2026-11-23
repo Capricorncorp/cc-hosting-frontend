@@ -1,4 +1,4 @@
-import { CONSOLE_ORIGIN, SESSION_COOKIE_DOMAIN } from '../surfaceConfig'
+import { CONSOLE_ORIGIN, MOONSHOT_PROFILE, SESSION_COOKIE_DOMAIN, STOREFRONT_ORIGIN } from '../surfaceConfig'
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { getAccessToken, clearTokens } from '@capricorncorp/frontend-platform/api/auth'
@@ -44,11 +44,40 @@ function readStoredUser(): SurfaceUser | null {
   } catch { return null }
 }
 
-// Silent detection runs only on the marketing entry points; it must never interfere
-// with the signup / onboarding / callback machinery.
+// Automatic detection by the global provider runs on the marketing entry points.
 function isMarketingPath(): boolean {
   const p = window.location.pathname
   return p === '/' || p === '/pricing'
+}
+
+function beginSilentSessionDetection(): boolean {
+  // One-time silent prompt=none — identical mechanism to capricorncorp.com. A shared
+  // OIDC session yields a code (→ name, via the gateway exchange in Callback.tsx);
+  // no session yields login_required (→ stay logged-out). No login form is ever shown.
+  try {
+    const state = crypto.randomUUID()
+    sessionStorage.setItem('cc_silent_state', state)
+    sessionStorage.setItem('cc_silent_return', window.location.pathname + window.location.search + window.location.hash)
+    sessionStorage.setItem('cc_silent_tried', '1')
+    const redirectUri = encodeURIComponent(window.location.origin + '/callback')
+    window.location.replace(
+      `${OIDC_URL}/auth?response_type=code&client_id=${CLIENT_ID}` +
+      `&redirect_uri=${redirectUri}&state=${encodeURIComponent(state)}` +
+      `&scope=openid+profile+email&prompt=none`,
+    )
+    return true
+  } catch { return false }
+}
+
+/** Preserve the existing signup for any browser with an issued local session or cart. */
+export function beginLegacySignupSessionDetection(): boolean {
+  if (MOONSHOT_PROFILE || window.location.origin !== STOREFRONT_ORIGIN ||
+      OIDC_URL !== 'https://auth.capricorncorp.com' || window.self !== window.top ||
+      window.location.pathname !== '/signup' || window.location.search || window.location.hash) return false
+  try {
+    if (sessionStorage.length !== 0 || localStorage.getItem('user_profile') !== null || getAccessToken()) return false
+  } catch { return false }
+  return beginSilentSessionDetection()
 }
 
 export function SurfaceAuthProvider({ children }: { children: React.ReactNode }) {
@@ -60,21 +89,7 @@ export function SurfaceAuthProvider({ children }: { children: React.ReactNode })
     if (!isMarketingPath()) return                          // don't touch signup/onboarding/callback
     if (sessionStorage.getItem('cc_silent_tried')) return   // exactly one silent attempt per tab
 
-    // One-time silent prompt=none — identical mechanism to capricorncorp.com. A shared
-    // OIDC session yields a code (→ name, via the gateway exchange in Callback.tsx);
-    // no session yields login_required (→ stay logged-out). No login form is ever shown.
-    try {
-      const state = crypto.randomUUID()
-      sessionStorage.setItem('cc_silent_state', state)
-      sessionStorage.setItem('cc_silent_return', window.location.pathname + window.location.search + window.location.hash)
-      sessionStorage.setItem('cc_silent_tried', '1')
-      const redirectUri = encodeURIComponent(window.location.origin + '/callback')
-      window.location.replace(
-        `${OIDC_URL}/auth?response_type=code&client_id=${CLIENT_ID}` +
-        `&redirect_uri=${redirectUri}&state=${encodeURIComponent(state)}` +
-        `&scope=openid+profile+email&prompt=none`,
-      )
-    } catch { /* crypto/sessionStorage unavailable — stay logged-out */ }
+    beginSilentSessionDetection()
   }, [user])
 
   const logout = useCallback(() => {
